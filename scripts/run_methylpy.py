@@ -1,11 +1,11 @@
-#!/usr/local/apps/python/2.7.8/bin/python
+#!/usr/local/bin/python2.7
 import sys
 import getopt
 from methylpy.call_mc import run_methylation_pipeline
 
 
 def main(argv):
-	
+
 	#Sample name
 	sample = argv[0]
 
@@ -22,19 +22,19 @@ def main(argv):
 
 	#Number of processors
 	num_procs = int(argv[3])
-	
+
 	#Sort memory
 	sort_mem = argv[4] + "G"
-	
+
 	#Adapter
 	adapter_seq = 'AGATCGGAAGAGCTCGTATGCC'
 
 	#Control "chrC:" or "chrL:"
 	m_control = argv[5] + ":"
-                         
+
 	run_methylation_pipeline(files=files,
 						 	 libraries=libraries,
-						 	 sample=sample, 
+						 	 sample=sample,
 						 	 forward_reference=f_ref,
 						 	 reverse_reference=r_ref,
 						 	 reference_fasta=ref_fasta,
@@ -67,8 +67,7 @@ def main(argv):
                         	 min_base_quality=1,
                          	 path_to_MarkDuplicates=False
                          	 )
-                         
-                      	
+
+
 if __name__ == "__main__":
    main(sys.argv[1:])
-

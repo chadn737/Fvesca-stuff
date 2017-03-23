@@ -1,6 +1,18 @@
 ---
 Daily status of updates
 ---
+Mar 22nd 2017
+1. Data mapped, make slight modifications to run_methylpy.sh (remove a few hashtags)
+2. Compress data
+3. Remove mitochondrial data from combined allc files
+
+Mar 12th 2017
+1. Mapping failed, fix run_methylpy.sh and rerun
+
+Mar 11th 2017
+1. Mapping running too slow on sapelo cluster, transfer to zcluster
+2. Modify scripts to run on zcluster
+3. Restart mapping
 
 Mar 8th 2017
 1. Fix run_methylpy.sh
