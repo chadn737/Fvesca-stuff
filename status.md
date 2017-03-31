@@ -1,6 +1,12 @@
 ---
 Daily status of updates
 ---
+Mar 30, 2017
+1. Update old genome to Fvesca v2, change "new" to v4.
+2. Move analysis back to sapelo
+3. Rerun prepare_references.sh
+4. Rerun mapping
+
 Mar 22nd 2017
 1. Data mapped, make slight modifications to run_methylpy.sh (remove a few hashtags)
 2. Compress data

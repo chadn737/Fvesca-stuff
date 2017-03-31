@@ -1,9 +1,14 @@
-#!/bin/bash
+#PBS -S /bin/bash
+#PBS -q batch
+#PBS -N methylpy
+#PBS -l nodes=1:ppn=12:rjsnode
+#PBS -l walltime=480:00:00
+#PBS -l mem=50gb
 
 echo "Starting"
-#module load python/2.7.8
-#cd $PBS_O_WORKDIR
-mkdir new old
+module load python/2.7.8
+cd $PBS_O_WORKDIR
+mkdir v4 v2
 
 #Uncompress fastq files
 echo "Uncompressing fastq files"
@@ -12,30 +17,30 @@ gunzip AD22DYACXX_lane6-strawberry_151_Schmitz_Pool8_INDEX_mixed_R1.fastq.gz
 cd ../
 
 #Run methylpy
-echo "run methylpy on old ref"
-cd old/
+echo "run methylpy on v2 ref"
+cd v2/
 mkdir allc reports
-python2.7 ../../scripts/run_methylpy.py Fvesca_old "../fastq/*.fastq" "../ref/old/methylCseq/Fvesca_old" "6" "2" "ChrC" > reports/Fvesca_old_output.txt
+python ../../scripts/run_methylpy.py Fvesca_v2 "../fastq/*.fastq" "../ref/v2/methylCseq/Fvesca_v2" "10" "4" "ChrC" > reports/Fvesca_v2_output.txt
 
 #Format allc files
 echo "Formatting allc files"
 mv allc_* allc/
 cd allc
 mkdir tmp
-head -1 allc_Fvesca_old_ChrL.tsv > tmp/header
-for i in allc_Fvesca_old_*
+head -1 allc_Fvesca_v2_ChrL.tsv > tmp/header
+for i in allc_Fvesca_v2_*
 do
 sed '1d' "$i" > tmp/"$i"
 done
 
-tar -cjvf Fvesca_old_allc.tar.bz2 allc_Fvesca_old_*
+tar -cjvf Fvesca_v2_allc.tar.bz2 allc_Fvesca_v2_*
 rm allc_*
 cd tmp
-rm allc_Fvesca_old_ChrL.tsv allc_Fvesca_old_ChrC.tsv allc_Fvesca_old_ChrM.tsv
-cat header allc_* > ../Fvesca_old_allc_total.tsv
+rm allc_Fvesca_v2_ChrL.tsv allc_Fvesca_v2_ChrC.tsv allc_Fvesca_v2_ChrM.tsv
+cat header allc_* > ../Fvesca_v2_allc_total.tsv
 cd ..
 rm -R tmp
-tar -cjvf Fvesca_old_allc_total.tar.bz2 Fvesca_old_allc_total.tsv
+tar -cjvf Fvesca_v2_allc_total.tar.bz2 Fvesca_v2_allc_total.tsv
 cd ../
 
 #Cleanup directory
@@ -44,30 +49,30 @@ rm *mpileup* *.bam *.bam.bai
 cd ../
 
 #Run methylpy
-echo "run methylpy on new ref"
-cd new/
+echo "run methylpy on v4 ref"
+cd v4/
 mkdir allc reports
-python2.7 ../../scripts/run_methylpy.py Fvesca_new "../fastq/*.fastq" "../ref/new/methylCseq/Fvesca_new" "10" "9" "ChrC" > reports/Fvesca_new_output.txt
+python ../../scripts/run_methylpy.py Fvesca_v4 "../fastq/*.fastq" "../ref/v4/methylCseq/Fvesca_v4" "10" "4" "ChrC" > reports/Fvesca_v4_output.txt
 
 #Format allc files
 echo "Formatting allc files"
 mv allc_* allc/
 cd allc
 mkdir tmp
-head -1 allc_Fvesca_new_ChrL.tsv > tmp/header
-for i in allc_Fvesca_new_*
+head -1 allc_Fvesca_v4_ChrL.tsv > tmp/header
+for i in allc_Fvesca_v4_*
 do
 sed '1d' "$i" > tmp/"$i"
 done
 
-tar -cjvf Fvesca_new_allc.tar.bz2 allc_Fvesca_new_*
+tar -cjvf Fvesca_v4_allc.tar.bz2 allc_Fvesca_v4_*
 rm allc_*
 cd tmp
-rm allc_Fvesca_new_ChrL.tsv allc_Fvesca_new_ChrC.tsv allc_Fvesca_new_ChrM.tsv
-cat header allc_* > ../Fvesca_new_allc_total.tsv
+rm allc_Fvesca_v4_ChrL.tsv allc_Fvesca_v4_ChrC.tsv allc_Fvesca_v4_ChrM.tsv
+cat header allc_* > ../Fvesca_v4_allc_total.tsv
 cd ..
 rm -R tmp
-tar -cjvf Fvesca_new_allc_total.tar.bz2 Fvesca_new_allc_total.tsv
+tar -cjvf Fvesca_v4_allc_total.tar.bz2 Fvesca_v4_allc_total.tsv
 cd ../
 
 #Cleanup directory

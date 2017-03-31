@@ -27,46 +27,57 @@ sed s/F_vesca_mito/ChrM/g F_vesca_mito.fasta > Fvesca_ChrM.fa
 sed s/Fragaria_vesca_f._alba_2095/ChrC/g Fragaria_vesca_f._alba_H4_chloroplast.fasta > Fvesca_ChrC.fa
 cd ..
 
-#Build old ref indexes
-echo "Preparing old refs"
-cd old/bowtie2
-gunzip Fvesca_226_v1.1.fa.gz
-cat Fvesca_226_v1.1.fa ../../organelles/Fvesca_ChrC.fa ../../organelles/Fvesca_ChrM.fa > tmp
-gzip Fvesca_226_v1.1.fa
-python ../../../../scripts/fix_fasta.py -i tmp -o Fvesca_old.fa
+#Build v2 ref indexes
+echo "Preparing v2 refs"
+cd v2/bowtie2
+gunzip Fragaria_vesca_v2.0.a1_pseudomolecules.fasta.gz
+cat Fragaria_vesca_v2.0.a1_pseudomolecules.fasta ../../organelles/Fvesca_ChrC.fa ../../organelles/Fvesca_ChrM.fa > tmp
+gzip Fragaria_vesca_v2.0.a1_pseudomolecules.fasta
+python ../../../../scripts/fix_fasta.py -i tmp -o Fvesca_v2.fa
 rm tmp
-time samtools faidx Fvesca_old.fa
-cut -f1,2 Fvesca_old.fa.fai > Fvesca_old.genome
-cat Fvesca_old.fa ../../../../misc/ChrL.fa > ../methylCseq/tmp
+time samtools faidx Fvesca_v2.fa
+cut -f1,2 Fvesca_v2.fa.fai > Fvesca_v2.genome
+cat Fvesca_v2.fa ../../../../misc/ChrL.fa > ../methylCseq/tmp
 cd ../
 
 cd methylCseq
-python ../../../../scripts/fix_fasta.py -i tmp -o Fvesca_old.fa
+python ../../../../scripts/fix_fasta.py -i tmp -o Fvesca_v2.fa
 rm tmp
-time samtools faidx Fvesca_old.fa
-python ../../../../scripts/build_old_Fvesca_methylCseq_index.py
-cd ../../
-ls
+time samtools faidx Fvesca_v2.fa
+python ../../../../scripts/build_v2_Fvesca_methylCseq_index.py
+cd ../
 
-#Build new ref indexes
-echo "Preparing new refs"
-cd new/bowtie2
+cd misc/
+gunzip Fragaria_vesca_v2.0.a1.transcripts.gff3.gz
+grep -v \# Fragaria_vesca_v2.0.a1.transcripts.gff3 > Fvesca_v2.gff
+gzip Fragaria_vesca_v2.0.a1.transcripts.gff3.gz
+cd ../../
+
+#Build v4 ref indexes
+echo "Preparing v4 refs"
+cd v4/bowtie2
 ls
 gunzip F_vesca_V4.1.fasta.gz
 cat F_vesca_V4.1.fasta ../../organelles/Fvesca_ChrC.fa ../../organelles/Fvesca_ChrM.fa > tmp
 gzip F_vesca_V4.1.fasta
-python ../../../../scripts/fix_fasta.py -i tmp -o Fvesca_new.fa
+python ../../../../scripts/fix_fasta.py -i tmp -o Fvesca_v4.fa
 rm tmp
-time samtools faidx Fvesca_new.fa
-cut -f1,2 Fvesca_new.fa.fai > Fvesca_new.genome
-cat Fvesca_new.fa ../../../../misc/ChrL.fa > ../methylCseq/tmp
+time samtools faidx Fvesca_v4.fa
+cut -f1,2 Fvesca_v4.fa.fai > Fvesca_v4.genome
+cat Fvesca_v4.fa ../../../../misc/ChrL.fa > ../methylCseq/tmp
 cd ../
 
 cd methylCseq
-python ../../../../scripts/fix_fasta.py -i tmp -o Fvesca_new.fa
+python ../../../../scripts/fix_fasta.py -i tmp -o Fvesca_v4.fa
 rm tmp
-time samtools faidx Fvesca_new.fa
-python ../../../../scripts/build_new_Fvesca_methylCseq_index.py
+time samtools faidx Fvesca_v4.fa
+python ../../../../scripts/build_v4_Fvesca_methylCseq_index.py
+cd ../
+
+cd misc/
+gunzip F_vesca_v4.1.6_makerStandard_woTpases_genemodels_new_gene_ids.gff.gz
+grep -v \# F_vesca_v4.1.6_makerStandard_woTpases_genemodels_new_gene_ids.gff.gz > Fvesca_v4.gff
+gzip F_vesca_v4.1.6_makerStandard_woTpases_genemodels_new_gene_ids.gff.gz
 cd ../../
 
 #Wrap it up

@@ -3,9 +3,9 @@ from methylpy.call_mc import build_ref
 
 #fasta file(s) of genome
 #Multiple files like input_files=['chr1.fa','chr2.fa',...,'chrY.fa','chrL.fa'] should also work
-input_files=['Fvesca_new.fa']
+input_files=['Fvesca_v2.fa']
 
 #Prefix of output files
-output='Fvesca_new'
+output='Fvesca_v2'
 
 build_ref(input_files,output)

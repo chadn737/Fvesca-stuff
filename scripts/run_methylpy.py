@@ -1,4 +1,4 @@
-#!/usr/local/bin/python2.7
+#!/usr/local/apps/python/2.7.8/bin/python
 import sys
 import getopt
 from methylpy.call_mc import run_methylation_pipeline
