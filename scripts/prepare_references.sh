@@ -86,7 +86,7 @@ for i in *fa *fasta
 do
   gzip "$i"
 done
-cd ../../misc
+cd ../../../misc
 gzip ChrL.fa
 cd ../data
 echo "Finished"
