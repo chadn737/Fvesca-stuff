@@ -50,7 +50,7 @@ cd ../
 cd misc/
 gunzip Fragaria_vesca_v2.0.a1.transcripts.gff3.gz
 grep -v \# Fragaria_vesca_v2.0.a1.transcripts.gff3 > Fvesca_v2.gff
-gzip Fragaria_vesca_v2.0.a1.transcripts.gff3.gz
+gzip Fragaria_vesca_v2.0.a1.transcripts.gff3
 cd ../../
 
 #Build v4 ref indexes
@@ -76,8 +76,8 @@ cd ../
 
 cd misc/
 gunzip F_vesca_v4.1.6_makerStandard_woTpases_genemodels_new_gene_ids.gff.gz
-grep -v \# F_vesca_v4.1.6_makerStandard_woTpases_genemodels_new_gene_ids.gff.gz > Fvesca_v4.gff
-gzip F_vesca_v4.1.6_makerStandard_woTpases_genemodels_new_gene_ids.gff.gz
+grep -v \# F_vesca_v4.1.6_makerStandard_woTpases_genemodels_new_gene_ids.gff > Fvesca_v4.gff
+gzip F_vesca_v4.1.6_makerStandard_woTpases_genemodels_new_gene_ids.gff
 cd ../../
 
 #Wrap it up
