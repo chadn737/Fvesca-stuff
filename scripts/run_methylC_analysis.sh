@@ -9,27 +9,30 @@
 echo "Starting"
 echo "Preparing gene lists"
 cd ref
-gunzip H4_1-1Syntelogs_V2-V4.txt.gz
+#gunzip H4_1-1Syntelogs_V2-V4.txt.gz
 cd v4/misc
-cut -f2 ../../H4_1-1Syntelogs_V2-V4.txt > tmp
-fgrep -f tmp Fvesca_v4.gff > Fvesca_v4_syntelogs.gff
-rm tmp
+#cut -f2 ../../H4_1-1Syntelogs_V2-V4.txt > tmp
+#fgrep -f tmp Fvesca_v4.gff > Fvesca_v4_syntelogs.gff
+#rm tmp
+gunzip MSUvsGDRwoTpsases_blastp+coord_MSU_unique.gff.gz
+cp MSUvsGDRwoTpsases_blastp+coord_MSU_unique.gff Fvesca_v4_unique.gff
+gzip MSUvsGDRwoTpsases_blastp+coord_MSU_unique.gff
 cd ../../v2/misc
-cut -f1 ../../H4_1-1Syntelogs_V2-V4.txt > tmp
-fgrep -f tmp Fvesca_v2.gff > Fvesca_v2_syntelogs.gff
-rm tmp
+#cut -f1 ../../H4_1-1Syntelogs_V2-V4.txt > tmp
+#fgrep -f tmp Fvesca_v2.gff > Fvesca_v2_syntelogs.gff
+#rm tmp
 cd ../../
-gzip H4_1-1Syntelogs_V2-V4.txt
+#gzip H4_1-1Syntelogs_V2-V4.txt
 cd ../
 
-#echo "Analyzing v4 genome"
-#cd v4
-#mkdir results figures_tables
-#echo "Running Python on v4"
-#python ../../scripts/methylC_analysis.py v4
-#echo "Running R on v2"
-#Rscript ../../scripts/methylC_analysis.R v4
-#cd ../
+echo "Analyzing v4 genome"
+cd v4
+mkdir results figures_tables
+echo "Running Python on v4"
+python ../../scripts/methylC_analysis.py v4
+echo "Running R on v2"
+Rscript ../../scripts/methylC_analysis.R v4
+cd ../
 
 echo "Analyzing v2 genome"
 cd v2
@@ -39,3 +42,7 @@ python ../../scripts/methylC_analysis.py v2
 echo "Running R on v2"
 Rscript ../../scripts/methylC_analysis.R v2
 cd ../
+
+echo "Making combined sample plots"
+Rscript ../scripts/combined_sample_plots.R
+echo "Done"

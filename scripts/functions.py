@@ -246,6 +246,23 @@ def feature_metaplot(allc,features,genome_file,output=(),ignoreStrand=False,wind
     else:
         return metaplot
 
+#plot methylation levels for genes
+def gene_metaplot(allc,features,genome_file,output=(),ignoreStrand=False,windows=60,updown_stream=2000,cutoff=0,first_feature=(),second_feature=(),filter_chr=[]):
+    mC_bed = allc2bed(allc)
+    bed = pbt.BedTool(unique_genes).filter(feat_filter,first_feature).filter(chr_filter,filter_chr)
+    flank_bed = pbt.bedtool.BedTool.flank(bed,g=genome_file,l=2000,r=2000,s=True).saveas('f_tmp')
+    cds_bed = bed.filter(feat_filter,second_feature).filter(chr_filter,filter_chr).saveas('c_tmp')
+    bed = cds_bed.cat(flank_bed, postmerge=False)
+    mapping = pbt.bedtool.BedTool.intersect(mC_bed,bed,wa=True)
+    m = pd.read_table(mapping.fn, header=None, usecols = [0,1,5,6,7,8,9])
+    m.columns = ['chr','pos','strand','mc_class','mc_count','total','methylated']
+    m = m.drop_duplicates()
+    m.to_csv('CDS_allc.tmp', sep='\t', index=False)
+    feature_metaplot('CDS_allc.tmp',features,genome_file,output,ignoreStrand,
+                     windows,updown_stream,cutoff,first_feature,filter_chr)
+    for i in ['CDS_allc.tmp','c_tmp','f_tmp']:
+        os.remove(i)
+
 #output per-site methylation levels for mCs in each specified context
 def per_site_mC(allc,output_path,context=['CG','CHG','CHH']):
     for i in context:
@@ -289,7 +306,7 @@ def count_subcontext_allc(allc,context=['CG','CHG','CHH'],output=(),cutoff=3,fil
     else:
         return df
 
-#Get subcontexts of genome and methylation 
+#Get subcontexts of genome and methylation
 def subcontext_methylation(allc,fasta,context=['CG','CHG','CHH'],output=(),cutoff=3,filter_chr=[]):
     a = count_subcontext_fasta(fasta,context,output=(),filter_chr=filter_chr)
     b = count_subcontext_allc(allc,context,output=(),cutoff=3,filter_chr=filter_chr)
