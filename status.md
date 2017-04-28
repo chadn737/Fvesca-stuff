@@ -1,6 +1,10 @@
 ---
 Daily status of updates
 ---
+Apr 28, 2017
+1. Make Chr1 combined plot
+2. Make setup.py
+
 Mar 30, 2017
 1. Update old genome to Fvesca v2, change "new" to v4.
 2. Move analysis back to sapelo
