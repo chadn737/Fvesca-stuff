@@ -37,22 +37,28 @@ if os.path.exists(genes_gff):
     print("Gene metaplot")
     functions.gene_metaplot(allc,genes_gff,genome_file,output="results/gene_metaplot.tsv",
                             ignoreStrand=False,windows=60,updown_stream=2000,cutoff=0,
-                            first_feature='mRNA',second_feature='CDS',filter_chr=filter_chr)
+                            first_feature='mRNA',second_feature='CDS',filter_chr=filter_chr,
+                            remove_tmp=False)
 else:
     print("No gene annotations found")
 
 if os.path.exists(syntenic_genes):
     print("Syntenic genes metaplot")
-    functions.gene_metaplot(allc,syntenic_genes,genome_file,output="results/syntenic_gene_metaplot.tsv",
-                            ignoreStrand=False,windows=60,updown_stream=2000,cutoff=0,
-                            first_feature='mRNA',second_feature='CDS',filter_chr=filter_chr)
+    functions.feature_metaplot(allc,syntenic_genes,genome_file,output="results/syntenic_gene_metaplot.tsv",
+                               ignoreStrand=False,windows=60,updown_stream=2000,cutoff=0)
 else:
     print("No syntentic genes found")
 
 if os.path.exists(unique_genes):
     print("Unique genes metaplot")
-    functions.gene_metaplot(allc,unique_genes,genome_file,output="results/unique_gene_metaplot.tsv",
-                            ignoreStrand=False,windows=60,updown_stream=2000,cutoff=0,
-                            first_feature='mRNA',second_feature='CDS',filter_chr=filter_chr)
+    functions.feature_metaplot(allc,unique_genes,genome_file,output="results/unique_gene_metaplot.tsv",
+                               ignoreStrand=False,windows=60,updown_stream=2000,cutoff=0)
 else:
     print("No unique genes found")
+
+if os.path.exists(genes_gff):
+    print("Gene methylation levels")
+    functions.feature_mC_levels('CDS_allc.tmp',genes_gff,output="results/gene_methylation_levels.tsv",
+                                cutoff=0,filter_features='gene',filter_chr=filter_chr)
+else:
+    print("No gene annotations found")

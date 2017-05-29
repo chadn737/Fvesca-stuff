@@ -1,6 +1,9 @@
 ---
 Daily status of updates
 ---
+May 29, 2017
+1. Fix gene metaplots. Slight error in code had kicked some data out. Conclusions the same.
+
 Apr 28, 2017
 1. Make Chr1 combined plot
 2. Make setup.py

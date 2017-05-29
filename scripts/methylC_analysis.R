@@ -72,7 +72,7 @@ if(file.exists(filename)){
             scale_y_continuous(limits=c(0,1.05), expand=c(0,0),
             breaks=c(0.25,0.5,0.75,1),labels=c("25%","50%","75%","100%")) +
             scale_fill_manual("",values = c("dodgerblue4","olivedrab","hotpink4"))
-  filename=paste("figures_tables/Fvesca_", args[1], "per_site_boxplot.pdf", sep="")
+  filename=paste("figures_tables/Fvesca_", args[1], "_per_site_boxplot.pdf", sep="")
   ggsave(filename=filename, plot, height=4, width=8, useDingbats=F)
 }
 

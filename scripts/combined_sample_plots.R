@@ -1,5 +1,4 @@
 #!/usr/bin/env Rscript
-setwd("Analysis/git/Fvesca-stuff/data")
 library(ggplot2)
 
 #gene metaplot

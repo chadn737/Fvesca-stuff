@@ -8,22 +8,22 @@
 #cd $PBS_O_WORKDIR
 echo "Starting"
 echo "Preparing gene lists"
-cd ref
+#cd ref
 #gunzip H4_1-1Syntelogs_V2-V4.txt.gz
-cd v4/misc
+#cd v4/misc
 #cut -f2 ../../H4_1-1Syntelogs_V2-V4.txt > tmp
 #fgrep -f tmp Fvesca_v4.gff > Fvesca_v4_syntelogs.gff
 #rm tmp
-gunzip MSUvsGDRwoTpsases_blastp+coord_MSU_unique.gff.gz
-cp MSUvsGDRwoTpsases_blastp+coord_MSU_unique.gff Fvesca_v4_unique.gff
-gzip MSUvsGDRwoTpsases_blastp+coord_MSU_unique.gff
-cd ../../v2/misc
+#gunzip MSUvsGDRwoTpsases_blastp+coord_MSU_unique.gff.gz
+#cp MSUvsGDRwoTpsases_blastp+coord_MSU_unique.gff Fvesca_v4_unique.gff
+#gzip MSUvsGDRwoTpsases_blastp+coord_MSU_unique.gff
+#cd ../../v2/misc
 #cut -f1 ../../H4_1-1Syntelogs_V2-V4.txt > tmp
 #fgrep -f tmp Fvesca_v2.gff > Fvesca_v2_syntelogs.gff
 #rm tmp
-cd ../../
+#cd ../../
 #gzip H4_1-1Syntelogs_V2-V4.txt
-cd ../
+#cd ../
 
 echo "Analyzing v4 genome"
 cd v4

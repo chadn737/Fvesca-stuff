@@ -246,22 +246,32 @@ def feature_metaplot(allc,features,genome_file,output=(),ignoreStrand=False,wind
     else:
         return metaplot
 
-#plot methylation levels for genes
-def gene_metaplot(allc,features,genome_file,output=(),ignoreStrand=False,windows=60,updown_stream=2000,cutoff=0,first_feature=(),second_feature=(),filter_chr=[]):
-    mC_bed = allc2bed(allc)
-    bed = pbt.BedTool(unique_genes).filter(feat_filter,first_feature).filter(chr_filter,filter_chr)
-    flank_bed = pbt.bedtool.BedTool.flank(bed,g=genome_file,l=2000,r=2000,s=True).saveas('f_tmp')
-    cds_bed = bed.filter(feat_filter,second_feature).filter(chr_filter,filter_chr).saveas('c_tmp')
+#map methylation to features
+def map2features(allc,features,genome_file,updown_stream=2000,first_feature=(),second_feature=(),filter_chr=[]):
+    bed = pbt.BedTool(features).filter(feat_filter,first_feature).filter(chr_filter,filter_chr)
+    flank_bed = pbt.bedtool.BedTool.flank(bed,g=genome_file,l=updown_stream,r=updown_stream,s=True).saveas('f_tmp')
+    cds_bed = pbt.BedTool(features).filter(feat_filter,second_feature).filter(chr_filter,filter_chr).saveas('c_tmp')
     bed = cds_bed.cat(flank_bed, postmerge=False)
+    mC_bed = allc2bed(allc)
     mapping = pbt.bedtool.BedTool.intersect(mC_bed,bed,wa=True)
     m = pd.read_table(mapping.fn, header=None, usecols = [0,1,5,6,7,8,9])
     m.columns = ['chr','pos','strand','mc_class','mc_count','total','methylated']
     m = m.drop_duplicates()
     m.to_csv('CDS_allc.tmp', sep='\t', index=False)
+
+#plot methylation levels for genes
+def gene_metaplot(allc,features,genome_file,output=(),ignoreStrand=False,windows=60,
+                  updown_stream=2000,cutoff=0,first_feature=(),second_feature=(),
+                  filter_chr=[],remove_tmp=True):
+    map2features(allc,features,genome_file,updown_stream,first_feature,second_feature,filter_chr)
     feature_metaplot('CDS_allc.tmp',features,genome_file,output,ignoreStrand,
                      windows,updown_stream,cutoff,first_feature,filter_chr)
-    for i in ['CDS_allc.tmp','c_tmp','f_tmp']:
-        os.remove(i)
+    if remove_tmp:
+        for i in ['CDS_allc.tmp','c_tmp','f_tmp']:
+            os.remove(i)
+    else:
+        for i in ['c_tmp','f_tmp']:
+            os.remove(i)
 
 #output per-site methylation levels for mCs in each specified context
 def per_site_mC(allc,output_path,context=['CG','CHG','CHH']):
@@ -316,17 +326,94 @@ def subcontext_methylation(allc,fasta,context=['CG','CHG','CHH'],output=(),cutof
     else:
         return df
 
-#filter DMR output from methylpy
-#use filter_dmr( collapsed DMR file from methylpy, output file for filtered data, minimum number DMS (default = 5)
-#minimum difference in methylation between highest and lowest methylated sample (default = 0.1 or 10% difference)
-def filter_dmr(dmr_file,output=(),min_dms=5,min_mC_diff=0.1):
-    a=pd.read_table(dmr_file)
-    list=[]
-    for c in a.itertuples():
-        if c[4] >= min_dms:
-            if max(c[7:])-min(c[7:]) >= min_mC_diff:
-                list.append(c[0])
-    a=a.ix[list]
+#Get feature methylation data
+def feature_mC_levels(allc,features,output=(),cutoff=0,filter_features=(),filter_chr=[]):
+    bed = pbt.BedTool(features).filter(feat_filter,filter_features).filter(chr_filter,filter_chr)
+    mC_bed = allc2bed(allc)
+    mapping = pbt.bedtool.BedTool.intersect(mC_bed,bed,wa=True,wb=True)
+    m = pd.read_table(mapping.fn, header=None, usecols = [18,6,7,8,9])
+    m = m.sort_values(by = 18,ascending=True)
+    a = pd.DataFrame(columns=['Gene','CG_sites','mCG_sites','CG_reads','mCG_reads',
+                              'CG_methylation_level','CHG_sites','mCHG_sites','CHG_reads',
+                              'mCHG_reads','CHG_methylation_level','CHH_sites','mCHH_sites',
+                              'CHH_reads','mCHH_reads','CHH_methylation_level'])
+    name = "none"
+    rCG = mrCG = CG = mCG = rCHG = mrCHG = CHG = mCHG = rCHH = mrCHH = CHH = mCHH = 0
+    for c in m.itertuples():
+        if name == "none":
+            name = c[5]
+            if int(c[3]) >= int(cutoff):
+                if c[1].startswith("CN"):
+                    continue
+                elif c[1].startswith("CG"):
+                    rCG = rCG + int(c[3])
+                    mrCG = mrCG + int(c[2])
+                    CG = CG + 1
+                    mCG = mCG + int(c[4])
+                elif c[1].endsswith("G"):
+                    rCHG = rCHG + int(c[3])
+                    mrCHG = mrCG + int(c[2])
+                    CHG = CHG + 1
+                    mCHG = mCHG + int(c[4])
+                else:
+                    rCHH = rCHH + int(c[3])
+                    mrCHH = mrCHH + int(c[2])
+                    CHH = CHH + 1
+                    mCHH = mCHH + int(c[4])
+        elif c[5] != name:
+            a = a.append({'Gene':str(name), 'CG_sites':str(CG), 'mCG_sites':str(mCG),
+                          'CG_reads':str(rCG), 'mCG_reads':str(mrCG),
+                          'CG_methylation_level':(np.float64(mrCG)/np.float64(rCG)), 'CHG_sites':str(CHG),
+                          'mCHG_sites':str(mCHG), 'CHG_reads':str(rCHG), 'mCHG_reads':str(mrCHG),
+                          'CHG_methylation_level':(np.float64(mrCHG)/np.float64(rCHG)),
+                          'mCHH_sites':str(mCHH), 'CHH_reads':str(rCHH), 'mCHH_reads':str(mrCHH),
+                          'CHH_methylation_level':(np.float64(mrCHH)/np.float64(rCHH))},ignore_index=True)
+            name = c[5]
+            rCG = mrCG = CG = mCG = rCHG = mrCHG = CHG = mCHG = rCHH = mrCHH = CHH = mCHH = 0
+            if int(c[3]) >= int(cutoff):
+                if c[1].startswith("CN"):
+                    continue
+                elif c[1].startswith("CG"):
+                    rCG = rCG + int(c[3])
+                    mrCG = mrCG + int(c[2])
+                    CG = CG + 1
+                    mCG = mCG + int(c[4])
+                elif c[1].endsswith("G"):
+                    rCHG = rCHG + int(c[3])
+                    mrCHG = mrCG + int(c[2])
+                    CHG = CHG + 1
+                    mCHG = mCHG + int(c[4])
+                else:
+                    rCHH = rCHH + int(c[3])
+                    mrCHH = mrCHH + int(c[2])
+                    CHH = CHH + 1
+                    mCHH = mCHH + int(c[4])
+        elif c[5] == name:
+            if int(c[3]) >= int(cutoff):
+                if c[1].startswith("CN"):
+                    continue
+                elif c[1].startswith("CG"):
+                    rCG = rCG + int(c[3])
+                    mrCG = mrCG + int(c[2])
+                    CG = CG + 1
+                    mCG = mCG + int(c[4])
+                elif c[1].endsswith("G"):
+                    rCHG = rCHG + int(c[3])
+                    mrCHG = mrCG + int(c[2])
+                    CHG = CHG + 1
+                    mCHG = mCHG + int(c[4])
+                else:
+                    rCHH = rCHH + int(c[3])
+                    mrCHH = mrCHH + int(c[2])
+                    CHH = CHH + 1
+                    mCHH = mCHH + int(c[4])
+    a = a.append({'Gene':str(name), 'CG_sites':str(CG), 'mCG_sites':str(mCG),
+                  'CG_reads':str(rCG), 'mCG_reads':str(mrCG),
+                  'CG_methylation_level':(np.float64(mrCG)/np.float64(rCG)), 'CHG_sites':str(CHG),
+                  'mCHG_sites':str(mCHG), 'CHG_reads':str(rCHG), 'mCHG_reads':str(mrCHG),
+                  'CHG_methylation_level':(np.float64(mrCHG)/np.float64(rCHG)),
+                  'mCHH_sites':str(mCHH), 'CHH_reads':str(rCHH), 'mCHH_reads':str(mrCHH),
+                  'CHH_methylation_level':(np.float64(mrCHH)/np.float64(rCHH))},ignore_index=True)
     if output:
         a.to_csv(output, sep='\t', index=False)
     else:
