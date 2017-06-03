@@ -67,7 +67,8 @@ if(file.exists(filename)){
             notchlower=notchlower,notchupper=notchupper),stat="identity",notch=T) +
             theme(panel.background=element_blank(), panel.grid=element_blank(),
             axis.text.y=element_text(color="black"), axis.text.x=element_text(color="black"),
-            axis.ticks=element_line(color="black"), axis.title=element_text(color="black")) +
+            axis.ticks=element_line(color="black"), axis.title=element_text(color="black"),
+            legend.position="none", axis.line=element_line(color="black")) +
             ylab("Methylation level") + xlab("Context") +
             scale_y_continuous(limits=c(0,1.05), expand=c(0,0),
             breaks=c(0.25,0.5,0.75,1),labels=c("25%","50%","75%","100%")) +
@@ -101,16 +102,19 @@ if(file.exists("results/genome_windows_data.tsv")){
 
   #plot chr metaplots
   print("Making chromosome plots")
-  df$chr <- gsub('_.*','',df$window)
-  df$window <- as.numeric(gsub('.*_','',df$window))
+  library(stringi)
+  df$chr <- stri_replace_last(df$window,'',regex="_[0-9]+.*?")
+  df$window <- as.numeric(stri_replace(df$window,'',regex=".*_"))
   chr <- unique(df$chr)
   for(i in chr){
      tmp <- df[df$chr == i,]
      if (max(tmp$window) > 10){
        break_points <- c(2,4,6,8,10)*max(tmp$window)/10
        label_points <- c(2,4,6,8,10)*max(tmp$window)/20
-       plot = ggplot(tmp, aes(x=window, group=1)) + geom_line(aes(y=mCG), color="dodgerblue4", size=0.8) +
-              geom_line(aes(y=mCHG), color="olivedrab", size=0.8) + geom_line(aes(y=mCHH), color="hotpink4", size=0.8) +
+       plot = ggplot(tmp, aes(x=window, group=1)) +
+              geom_line(aes(y=mCG), color="dodgerblue4", size=0.8) +
+              geom_line(aes(y=mCHG), color="olivedrab", size=0.8) +
+              geom_line(aes(y=mCHH), color="hotpink4", size=0.8) +
               theme(panel.background=element_blank(), panel.grid=element_blank(),
               axis.text.y=element_text(color="black"), axis.text.x=element_text(color="black"),
               axis.ticks=element_line(color="black"), axis.title=element_text(color="black"),
@@ -145,28 +149,6 @@ if(file.exists("results/gene_metaplot.tsv")){
   plot <- plot_features(df) +
           scale_x_continuous(labels=c("-2000","TSS'","TTS'","+2000"), breaks=c(1, 20, 40, 60))
   filename=paste("figures_tables/Fvesca_", args[1], "_gene_metaplot.pdf", sep="")
-  ggsave(filename=filename, plot, height=4, width=4, useDingbats=F)
-  rm(df,plot)
-}
-
-#plot syntenic gene metaplots
-if(file.exists("results/syntenic_gene_metaplot.tsv")){
-  print("Making syntenic gene metaplot")
-  df <- read.table("results/syntenic_gene_metaplot.tsv",header=T,sep="\t")
-  plot <- plot_features(df) +
-          scale_x_continuous(labels=c("-2000","TSS'","TTS'","+2000"), breaks=c(1, 20, 40, 60))
-  filename=paste("figures_tables/Fvesca_", args[1], "_syntenic_gene_metaplot.pdf", sep="")
-  ggsave(filename=filename, plot, height=4, width=4, useDingbats=F)
-  rm(df,plot)
-}
-
-#plot unique gene metaplots
-if(file.exists("results/unique_gene_metaplot.tsv")){
-  print("Making unique gene metaplot")
-  df <- read.table("results/unique_gene_metaplot.tsv",header=T,sep="\t")
-  plot <- plot_features(df) +
-          scale_x_continuous(labels=c("-2000","TSS'","TTS'","+2000"), breaks=c(1, 20, 40, 60))
-  filename=paste("figures_tables/Fvesca_", args[1], "_unique_gene_metaplot.pdf", sep="")
   ggsave(filename=filename, plot, height=4, width=4, useDingbats=F)
   rm(df,plot)
 }
