@@ -25,9 +25,9 @@ plot_features <- function(df){
 }
 
 #define plotting function for gene-mC correlations
-plot_correlations <- function(df,mC_color){
+plot_correlations <- function(df,mC,mC_color){
   require(ggplot2)
-  ggplot(df, aes(genes, mCG)) + geom_point(color=mC_color) +
+  ggplot(df, aes(genes, mC)) + geom_point(color=mC_color) +
           theme(panel.background=element_blank(), panel.grid=element_blank(),
           axis.text.y=element_text(color="black"), axis.text.x=element_text(color="black"),
           axis.ticks=element_line(color="black"), axis.title=element_text(color="black"),
@@ -36,7 +36,7 @@ plot_correlations <- function(df,mC_color){
           scale_x_continuous(expand=c(0,0)) +
           scale_y_continuous(limits=c(0,1), expand=c(0,0),
           breaks=c(0.25,0.5,0.75,1),labels=c("25%","50%","75%","100%")) +
-          stat_smooth(aes(genes,mCG), color="black", method="lm", se=F)
+          stat_smooth(aes(genes,mC), color="black", method="lm", se=F)
 }
 
 #Per-site methylation
@@ -83,19 +83,19 @@ if(file.exists("results/genome_windows_data.tsv")){
   df <- read.table("results/genome_windows_data.tsv",header=T,sep="\t")
 
   #plot mCG gene correlations
-  plot <- plot_correlations(df,"dodgerblue4")
+  plot <- plot_correlations(df,"mCG","dodgerblue4")
   filename=paste("figures_tables/Fvesca_", args[1], "_gene_mCG_correlation.pdf", sep="")
   ggsave(filename=filename, plot, height=4, width=4, useDingbats=F)
   rm(plot)
 
   #plot mCHG gene correlations
-  plot <- plot_correlations(df,"olivedrab")
+  plot <- plot_correlations(df,"mCHG","olivedrab")
   filename=paste("figures_tables/Fvesca_", args[1], "_gene_mCHG_correlation.pdf", sep="")
   ggsave(filename=filename, plot, height=4, width=4, useDingbats=F)
   rm(plot)
 
   #plot mCHH gene correlations
-  plot <- plot_correlations(df,"hotpink4")
+  plot <- plot_correlations(df,"mCHH","hotpink4")
   filename=paste("figures_tables/Fvesca_", args[1], "_gene_mCHH_correlation.pdf", sep="")
   ggsave(filename=filename, plot, height=4, width=4, useDingbats=F)
   rm(plot)
