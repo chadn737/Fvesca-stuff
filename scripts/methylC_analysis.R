@@ -83,19 +83,19 @@ if(file.exists("results/genome_windows_data.tsv")){
   df <- read.table("results/genome_windows_data.tsv",header=T,sep="\t")
 
   #plot mCG gene correlations
-  plot <- plot_correlations(df,"mCG","dodgerblue4")
+  plot <- plot_correlations(df,df$mCG,"dodgerblue4")
   filename=paste("figures_tables/Fvesca_", args[1], "_gene_mCG_correlation.pdf", sep="")
   ggsave(filename=filename, plot, height=4, width=4, useDingbats=F)
   rm(plot)
 
   #plot mCHG gene correlations
-  plot <- plot_correlations(df,"mCHG","olivedrab")
+  plot <- plot_correlations(df,df$mCHG,"olivedrab")
   filename=paste("figures_tables/Fvesca_", args[1], "_gene_mCHG_correlation.pdf", sep="")
   ggsave(filename=filename, plot, height=4, width=4, useDingbats=F)
   rm(plot)
 
   #plot mCHH gene correlations
-  plot <- plot_correlations(df,"mCHH","hotpink4")
+  plot <- plot_correlations(df,df$mCHH,"hotpink4")
   filename=paste("figures_tables/Fvesca_", args[1], "_gene_mCHH_correlation.pdf", sep="")
   ggsave(filename=filename, plot, height=4, width=4, useDingbats=F)
   rm(plot)
