@@ -37,6 +37,24 @@ plot_correlations <- function(df,mC,mC_color){
             stat_smooth(aes(genes,mC), color="black", method="lm", se=F)
 }
 
+#Total methylation
+if(file.exists("results/total_weighted_mC.tsv")){
+  print("Plotting genome-wide total methylation")
+  df <- read.table("results/total_weighted_mC.tsv",header=T,sep="\t")
+  plot <- ggplot(df[1:3,],aes(x=Context,y=Weighted_mC,fill=Context)) +
+          geom_bar(stat = "identity") +
+          theme(panel.background=element_blank(), panel.grid=element_blank(),
+          axis.text.y=element_text(color="black"), axis.text.x=element_text(color="black"),
+          axis.ticks=element_line(color="black"), axis.title=element_text(color="black"),
+          legend.position="none", axis.line=element_line(color="black")) +
+          ylab("Percent methylation") + xlab( "" ) +
+          scale_y_continuous(limits=c(0,1), expand=c(0,0),
+          breaks=c(0.25,0.5,0.75,1),labels=c("25%","50%","75%","100%")) +
+          scale_fill_manual("",values=c("dodgerblue4","olivedrab","hotpink4"))
+  filename=paste("figures_tables/Fvesca_", args[1], "_total_methylation.pdf", sep="")
+  ggsave(filename=filename, plot, height=4, width=3, useDingbats=F)
+}
+
 #Per-site methylation
 filename=paste("results/", args[1], "_per_site_boxplot.tsv", sep="")
 if(!file.exists(filename)){
