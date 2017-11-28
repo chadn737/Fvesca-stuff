@@ -152,7 +152,7 @@ def mC_distribution(genome_file,allc,gff_file,fasta,windows=100000,stepsize=5000
 def feature_metaplot(allc,features,genome_file,output=(),ignoreStrand=False,windows=60,updown_stream=2000,cutoff=0,filter_features=(),filter_chr=[]):
     counter = 1
     mC_bed = allc2bed(allc)
-    a = pbt.BedTool(features)
+    a = pbt.BedTool(features).saveas('b_tmp')
     if ignoreStrand:
         p_bed = a.filter(feat_filter,filter_features).filter(chr_filter,filter_chr).saveas('p_tmp')
     else:
@@ -211,6 +211,7 @@ def feature_metaplot(allc,features,genome_file,output=(),ignoreStrand=False,wind
             CG = mCG = CHG = mCHG = CHH = mCHH = 0
     os.remove('p_tmp')
     os.remove('n_tmp')
+    os.remove('b_tmp')
     if output:
         metaplot.to_csv(output, sep='\t', index=False)
     else:
